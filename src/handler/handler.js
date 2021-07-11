@@ -1,8 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const bookshelf = require('../bookshelf');
 
-let updateBookshelf = bookshelf;
-
 const addBookHandler = (request, h) => {
   const {
     name,
@@ -69,8 +67,7 @@ const addBookHandler = (request, h) => {
 
 const getAllBooksHandler = (request, h) => {
   const { name, reading, finished } = request.query;
-  const updateReading = !!reading;
-  const updateFinished = !!finished;
+  let updateBookshelf = bookshelf;
   if (name === undefined && reading === undefined && finished === undefined) {
     const response = h.response({
       status: 'success',
@@ -80,17 +77,26 @@ const getAllBooksHandler = (request, h) => {
     });
     return response;
   }
+
+  const updateReading = reading !== '0';
+  const updateFinished = finished !== '0';
+
   if (name !== undefined) {
-    updateBookshelf = updateBookshelf.filter((book) => book
-      .name.toLowerCase().includes(name.toLowerCase()));
+    updateBookshelf = updateBookshelf.filter(
+      (book) => book.name.toLowerCase().includes(name.toLowerCase()),
+    );
   }
 
   if (reading !== undefined) {
-    updateBookshelf = updateBookshelf.filter((book) => book.reading === updateReading);
+    updateBookshelf = updateBookshelf.filter(
+      (book) => book.reading === updateReading,
+    );
   }
 
   if (finished !== undefined) {
-    updateBookshelf = updateBookshelf.filter((book) => book.finished === updateFinished);
+    updateBookshelf = updateBookshelf.filter(
+      (book) => book.finished === updateFinished,
+    );
   }
   const response = h.response({
     status: 'success',
@@ -103,7 +109,6 @@ const getAllBooksHandler = (request, h) => {
     },
   });
   response.code(200);
-
   return response;
 };
 
